@@ -3,7 +3,9 @@ package nl.harmvdhorst.jboekhouden;
 import com.thoughtworks.xstream.XStream;
 
 import nl.harmvdhorst.jboekhouden.request.AddFactuurRequest;
+import nl.harmvdhorst.jboekhouden.request.AddGrootboekrekeningRequest;
 import nl.harmvdhorst.jboekhouden.response.AddFactuurResponse;
+import nl.harmvdhorst.jboekhouden.response.AddGrootboekrekeningResponse;
 import nl.harmvdhorst.jboekhouden.response.OpenSessionResponse;
 
 import okhttp3.*;
@@ -28,17 +30,6 @@ public class JBoekhouden {
         this.securityCode1 = securityCode1;
         this.securityCode2 = securityCode2;
         this.source = source;
-    }
-
-    public AddFactuurResponse addFactuur(AddFactuurRequest request){
-        AtomicReference<AddFactuurResponse> response = null;
-
-        sendRequest("AddFactuur", request.serialize(), true, (httpResponse) -> {
-            xStream.processAnnotations(AddFactuurRequest.class);
-            response.set((AddFactuurResponse) xStream.fromXML(httpResponse, AddFactuurResponse.class));
-        });
-
-        return response.get();
     }
 
     public void login(){
@@ -113,6 +104,31 @@ public class JBoekhouden {
     public String decodeResponse(String type, byte[] xml){
         return new String(xml).split("<" + type + " xmlns=\"http://www.e-boekhouden.nl/soap\"> ")[1].split("</" + type)[0];
     }
+
+
+    public AddFactuurResponse addFactuur(AddFactuurRequest request){
+        AtomicReference<AddFactuurResponse> response = null;
+
+        sendRequest("AddFactuur", request.serialize(), true, (httpResponse) -> {
+            xStream.processAnnotations(AddFactuurRequest.class);
+            response.set((AddFactuurResponse) xStream.fromXML(httpResponse));
+        });
+
+        return response.get();
+    }
+
+    public AddGrootboekrekeningResponse addGrootboekrekening(AddGrootboekrekeningRequest request){
+        AtomicReference<AddGrootboekrekeningResponse> response = null;
+
+        sendRequest("AddGrootboekrekening", request.serialize(), true, (httpResponse) -> {
+            xStream.processAnnotations(AddGrootboekrekeningRequest.class);
+            response.set((AddGrootboekrekeningResponse) xStream.fromXML(httpResponse));
+        });
+
+        return response.get();
+    }
+
+
 
     public static class Builder {
 
