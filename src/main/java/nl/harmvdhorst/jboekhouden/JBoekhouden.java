@@ -2,11 +2,13 @@ package nl.harmvdhorst.jboekhouden;
 
 import com.thoughtworks.xstream.XStream;
 
+import nl.harmvdhorst.jboekhouden.objects.Filter;
+import nl.harmvdhorst.jboekhouden.objects.OpSoort;
 import nl.harmvdhorst.jboekhouden.request.AddFactuurRequest;
 import nl.harmvdhorst.jboekhouden.request.AddGrootboekrekeningRequest;
-import nl.harmvdhorst.jboekhouden.response.AddFactuurResponse;
-import nl.harmvdhorst.jboekhouden.response.AddGrootboekrekeningResponse;
-import nl.harmvdhorst.jboekhouden.response.OpenSessionResponse;
+import nl.harmvdhorst.jboekhouden.request.AddMutatieRequest;
+import nl.harmvdhorst.jboekhouden.request.AddRelatieRequest;
+import nl.harmvdhorst.jboekhouden.response.*;
 
 import okhttp3.*;
 
@@ -22,19 +24,23 @@ public class JBoekhouden {
     private final String securityCode1;
     private final String securityCode2;
     private final String source;
+    private final String administratieGUID;
 
     private String sessionId;
 
-    private JBoekhouden(String username, String securityCode1, String securityCode2, String source){
+    private JBoekhouden(String username, String securityCode1, String securityCode2, String source, String administratieGUID){
         this.username = username;
         this.securityCode1 = securityCode1;
         this.securityCode2 = securityCode2;
         this.source = source;
+        this.administratieGUID = administratieGUID;
+
+        xStream.allowTypesByWildcard(new String[]{"nl.harmvdhorst.jboekhouden.**"});
     }
 
     public void openSession(){
 
-        sendRequest("OpenSession", getLoginXml(), false, (httpResponse) -> {
+        sendRequest((administratieGUID == null ? "OpenSession" : "OpenSessionSub"), getLoginXml(), false, (httpResponse) -> {
             xStream.processAnnotations(OpenSessionResponse.class);
 
             OpenSessionResponse response = (OpenSessionResponse) xStream.fromXML(httpResponse);
@@ -49,16 +55,21 @@ public class JBoekhouden {
 
     }
 
-    public void openSessionSub(){
-
-    }
-
     public void logout(){
         sendRequest("CloseSession", "<SessionID>" + sessionId + "</SessionID>", false, (httpResponse) -> {});
     }
 
     public String autoLogin(){
-        return "Token";
+
+        AutoLoginResponse response = sendHttpRequest("AutoLogin", "<Username>" + username + "</Username>", true, AutoLoginResponse.class);
+
+        if(response.error != null){
+            // TODO proper error handling
+            System.out.println("error");
+            return null;
+        }
+
+        return response.Token;
     }
 
     private void sendRequest(String action, String xml, boolean withSession, Consumer<String> response){
@@ -104,8 +115,9 @@ public class JBoekhouden {
         String securityCode1 = "<SecurityCode1>" + this.securityCode1 + "</SecurityCode1>";
         String securityCode2 = "<SecurityCode2>" + this.securityCode2 + "</SecurityCode2>";
         String source = "<Source>" + this.source + "</Source>";
+        String administratieGUID = "<AdministratieGUID>" + this.administratieGUID + "</AdministratieGUID>";
 
-        return username + securityCode1 + securityCode2 + (this.source != null ? source : "");
+        return username + securityCode1 + securityCode2 + (this.source != null ? source : "") + (this.administratieGUID != null ? administratieGUID : "");
 
     }
 
@@ -113,27 +125,86 @@ public class JBoekhouden {
         return new String(xml).split("<" + type + " xmlns=\"http://www.e-boekhouden.nl/soap\"> ")[1].split("</" + type)[0];
     }
 
-
     public AddFactuurResponse addFactuur(AddFactuurRequest request){
-        AtomicReference<AddFactuurResponse> response = null;
-
-        sendRequest("AddFactuur", request.serialize(), true, (httpResponse) -> {
-            xStream.processAnnotations(AddFactuurRequest.class);
-            response.set((AddFactuurResponse) xStream.fromXML(httpResponse));
-        });
-
-        return response.get();
+        return sendHttpRequest("AddFactuur", request.serialize(), true, AddFactuurResponse.class);
     }
 
     public AddGrootboekrekeningResponse addGrootboekrekening(AddGrootboekrekeningRequest request){
-        AtomicReference<AddGrootboekrekeningResponse> response = null;
+        return sendHttpRequest("AddGrootboekrekening", request.serialize(), true, AddGrootboekrekeningResponse.class);
+    }
 
-        sendRequest("AddGrootboekrekening", request.serialize(), true, (httpResponse) -> {
-            xStream.processAnnotations(AddGrootboekrekeningRequest.class);
-            response.set((AddGrootboekrekeningResponse) xStream.fromXML(httpResponse));
+    public AddMutatieResponse addMutatie(AddMutatieRequest request){
+        return sendHttpRequest("AddMutatie", request.serialize(), true, AddMutatieResponse.class);
+    }
+
+    public AddRelatieResponse addRelatie(AddRelatieRequest request){
+        return sendHttpRequest("AddRelatie", request.serialize(), true, AddRelatieResponse.class);
+    }
+
+    public GetAdministratiesResponse getAdministraties(){
+        return sendHttpRequest("GetAdministraties", "", true, GetAdministratiesResponse.class);
+    }
+
+    public GetArtikelenResponse getArtikelen(Filter filter){
+        return sendHttpRequest("GetArtikelen", filter.serialize(), true, GetArtikelenResponse.class);
+    }
+
+    public GetFacturenResponse getFacturen(Filter filter){
+        return sendHttpRequest("GetFacturen", filter.serialize(), true, GetFacturenResponse.class);
+    }
+
+    public GetGrootboekrekeningenResponse getGrootboekrekeningen(Filter filter){
+        return sendHttpRequest("GetGrootboekrekeningen", filter.serialize(), true, GetGrootboekrekeningenResponse.class);
+    }
+
+    public GetKostenplaatsenResponse getKostenplaatsen(Filter filter){
+        return sendHttpRequest("GetKostenplaatsen", filter.serialize(), true, GetKostenplaatsenResponse.class);
+    }
+
+    public GetMutatiesResponse getMutaties(Filter filter){
+        return sendHttpRequest("GetMutaties", filter.serialize(), true, GetMutatiesResponse.class);
+    }
+
+    public GetOpenPostenResponse getOpenPosten(OpSoort OpSoort){
+        return sendHttpRequest("GetOpenPosten", "<OpSoort>" + OpSoort + "</OpSoort>", true, GetOpenPostenResponse.class);
+    }
+
+    public GetRelatiesResponse getRelaties(Filter filter){
+        return sendHttpRequest("GetRelaties", filter.serialize(), true, GetRelatiesResponse.class);
+    }
+
+    public GetSaldiResponse getSaldi(Filter filter){
+        return sendHttpRequest("GetSaldi", filter.serialize(), true, GetSaldiResponse.class);
+    }
+
+    public GetSaldoResponse getSaldo(Filter filter){
+        return sendHttpRequest("GetSaldo", filter.serialize(), true, GetSaldoResponse.class);
+    }
+
+    public UpdateGrootboekrekeningResponse updateGrootboekrekening(AddGrootboekrekeningRequest request){
+        return sendHttpRequest("UpdateGrootboekrekening", request.serialize(), true, UpdateGrootboekrekeningResponse.class);
+    }
+
+    public UpdateRelatieResponse updateRelatie(AddRelatieRequest request){
+        return sendHttpRequest("UpdateRelatie", request.serialize(), true, UpdateRelatieResponse.class);
+    }
+
+    public <T> T sendHttpRequest(String action, String xml, boolean withSession, Class<T> response){
+
+        AtomicReference<String> rawResponseString = new AtomicReference<>();
+        AtomicReference<T> rawResponse = new AtomicReference<>();
+
+        sendRequest(action, xml, withSession, (httpRes) -> {
+            if(response != String.class){
+                xStream.processAnnotations(response);
+                rawResponse.set((T) xStream.fromXML(httpRes));
+            } else {
+                rawResponseString.set(httpRes);
+            }
         });
 
-        return response.get();
+        return response != String.class ? rawResponse.get() : (T) rawResponseString.get();
+
     }
 
     public static JBoekhoudenBuilder builder(){
@@ -146,6 +217,7 @@ public class JBoekhouden {
         private String securityCode1;
         private String securityCode2;
         private String source = null;
+        private String administratieGUID = null;
 
         public JBoekhoudenBuilder setUsername(String username){
             this.username = username;
@@ -163,8 +235,13 @@ public class JBoekhouden {
             return this;
         }
 
+        public JBoekhoudenBuilder setAdministratieGUID(String administratieGUID){
+            this.administratieGUID = administratieGUID;
+            return this;
+        }
+
         public JBoekhouden build(){
-            return new JBoekhouden(username, securityCode1, securityCode2, source);
+            return new JBoekhouden(username, securityCode1, securityCode2, source, administratieGUID);
         }
 
     }
