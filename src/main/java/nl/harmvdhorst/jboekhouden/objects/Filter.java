@@ -1,10 +1,12 @@
 package nl.harmvdhorst.jboekhouden.objects;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
+import lombok.Builder;
 import nl.harmvdhorst.jboekhouden.request.Request;
 
 import java.util.Date;
 
+@Builder(setterPrefix = "set")
 @XStreamAlias("cFilter")
 public class Filter extends Request {
 

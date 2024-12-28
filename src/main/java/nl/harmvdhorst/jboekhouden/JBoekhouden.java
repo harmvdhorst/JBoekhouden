@@ -32,7 +32,7 @@ public class JBoekhouden {
         this.source = source;
     }
 
-    public void login(){
+    public void openSession(){
 
         sendRequest("OpenSession", getLoginXml(), false, (httpResponse) -> {
             xStream.processAnnotations(OpenSessionResponse.class);
@@ -49,8 +49,16 @@ public class JBoekhouden {
 
     }
 
+    public void openSessionSub(){
+
+    }
+
     public void logout(){
         sendRequest("CloseSession", "<SessionID>" + sessionId + "</SessionID>", false, (httpResponse) -> {});
+    }
+
+    public String autoLogin(){
+        return "Token";
     }
 
     private void sendRequest(String action, String xml, boolean withSession, Consumer<String> response){
@@ -128,27 +136,29 @@ public class JBoekhouden {
         return response.get();
     }
 
+    public static JBoekhoudenBuilder builder(){
+        return new JBoekhoudenBuilder();
+    }
 
-
-    public static class Builder {
+    public static class JBoekhoudenBuilder {
 
         private String username;
         private String securityCode1;
         private String securityCode2;
         private String source = null;
 
-        public Builder setUsername(String username){
+        public JBoekhoudenBuilder setUsername(String username){
             this.username = username;
             return this;
         }
 
-        public Builder setSecurityCodes(String securityCode1, String securityCode2){
+        public JBoekhoudenBuilder setSecurityCodes(String securityCode1, String securityCode2){
             this.securityCode1 = securityCode1;
             this.securityCode2 = securityCode2;
             return this;
         }
 
-        public Builder setSource(String source){
+        public JBoekhoudenBuilder setSource(String source){
             this.source = source;
             return this;
         }

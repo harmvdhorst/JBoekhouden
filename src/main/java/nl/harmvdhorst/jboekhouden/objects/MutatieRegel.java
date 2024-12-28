@@ -18,4 +18,6 @@ public class MutatieRegel {
     public String TegenrekeningCode;
     public Long KostenplaatsID;
 
+    public String Factuurnummer;
+
 }
