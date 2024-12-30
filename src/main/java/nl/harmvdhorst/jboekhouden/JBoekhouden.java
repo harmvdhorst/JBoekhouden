@@ -35,7 +35,7 @@ public class JBoekhouden {
         this.securityCode2 = securityCode2;
         this.source = source;
         this.administratieGUID = administratieGUID;
-
+        
         xStream.allowTypesByWildcard(new String[]{"nl.harmvdhorst.jboekhouden.**"});
         xStream.registerConverter(new DateTimeConverter());
     }
