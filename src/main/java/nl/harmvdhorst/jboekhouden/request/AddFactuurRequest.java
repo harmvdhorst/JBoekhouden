@@ -4,6 +4,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Builder;
 import nl.harmvdhorst.jboekhouden.objects.FactuurRegel;
 import nl.harmvdhorst.jboekhouden.objects.IncassoMachtigingSoort;
+import nl.harmvdhorst.jboekhouden.objects.Required;
 
 import java.util.Date;
 import java.util.List;
@@ -13,9 +14,12 @@ import java.util.List;
 public class AddFactuurRequest extends Request {
 
     public String FactuurNummer;
+    @Required
     public String RelatieCode;
+    @Required
     public Date Datum;
     public Long Betalingstermijn;
+    @Required
     public String Factuursjabloon;
     public Boolean PerEmailVerzenden;
     public String EmailOnderwerp;
@@ -37,6 +41,7 @@ public class AddFactuurRequest extends Request {
     public Boolean InBoekhoudingPlaatsen;
     public String BoekhoudmutatieOmschrijving;
 
+    @Required
     public List<FactuurRegel> Regels;
 
 

@@ -3,6 +3,7 @@ package nl.harmvdhorst.jboekhouden.request;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Builder;
 import nl.harmvdhorst.jboekhouden.objects.BP;
+import nl.harmvdhorst.jboekhouden.objects.Required;
 
 import java.util.Date;
 
@@ -12,7 +13,9 @@ public class AddRelatieRequest extends Request {
 
     public Integer ID;
     public Date AddDatum;
+    @Required
     public String Code;
+    @Required
     public String Bedrijf;
     public String Contactpersoon;
     public String Geslacht;
@@ -39,6 +42,7 @@ public class AddRelatieRequest extends Request {
     public String Aanhef;
     public String IBAN;
     public String BIC;
+    @Required
     public BP BP;
     public String Def1;
     public String Def2;

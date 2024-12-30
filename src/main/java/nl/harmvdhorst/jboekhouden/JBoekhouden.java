@@ -11,9 +11,9 @@ import nl.harmvdhorst.jboekhouden.request.AddRelatieRequest;
 import nl.harmvdhorst.jboekhouden.response.*;
 
 import okhttp3.*;
+import okhttp3.Response;
 
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
+import java.io.IOException;
 
 public class JBoekhouden {
 
@@ -38,27 +38,204 @@ public class JBoekhouden {
         xStream.allowTypesByWildcard(new String[]{"nl.harmvdhorst.jboekhouden.**"});
     }
 
+    /**
+     * Voer een nieuwe factuur in
+     *
+     * @param request as AddFactuurRequest
+     * @return response as AddFactuurResponse
+     */
+    public AddFactuurResponse addFactuur(AddFactuurRequest request){
+        return sendHttpRequest("AddFactuur", request.serialize(), true, AddFactuurResponse.class);
+    }
+
+    /**
+     * Voeg een nieuwe grootboekrekening toe
+     *
+     * @param request as AddGrootboekrekeningRequest
+     * @return response as AddGrootboekrekeningResponse
+     */
+    public AddGrootboekrekeningResponse addGrootboekrekening(AddGrootboekrekeningRequest request){
+        return sendHttpRequest("AddGrootboekrekening", request.serialize(), true, AddGrootboekrekeningResponse.class);
+    }
+
+    /**
+     * Voeg een boekhoudmutatie toe
+     *
+     * @param request as AddMutatieRequest
+     * @return response as AddMutatieResponse
+     */
+    public AddMutatieResponse addMutatie(AddMutatieRequest request){
+        return sendHttpRequest("AddMutatie", request.serialize(), true, AddMutatieResponse.class);
+    }
+
+    /**
+     * Voeg een relatie toe
+     *
+     * @param request as AddRelatieRequest
+     * @return response as AddRelatieResponse
+     */
+    public AddRelatieResponse addRelatie(AddRelatieRequest request){
+        return sendHttpRequest("AddRelatie", request.serialize(), true, AddRelatieResponse.class);
+    }
+
+    /**
+     * Haal gekoppelde administraties op
+     *
+     * @return response as GetAdministatiesResponse
+     */
+    public GetAdministratiesResponse getAdministraties(){
+        return sendHttpRequest("GetAdministraties", "", true, GetAdministratiesResponse.class);
+    }
+
+    /**
+     * Haal artikelen van een administratie op
+     * Voor filter opties zie e-boekhouden documentatie
+     *
+     * @param filter as Filter
+     * @return response as GetArtikelenResponse
+     */
+    public GetArtikelenResponse getArtikelen(Filter filter){
+        return sendHttpRequest("GetArtikelen", filter.serialize(), true, GetArtikelenResponse.class);
+    }
+
+    /**
+     * Haal 1 of meerdere facturen op
+     * Voor filter opties zie e-boekhouden documentatie
+     *
+     * @param filter as Filter
+     * @return response as GetFacturenResponse
+     */
+    public GetFacturenResponse getFacturen(Filter filter){
+        return sendHttpRequest("GetFacturen", filter.serialize(), true, GetFacturenResponse.class);
+    }
+
+    /**
+     * Haal lijst met grootboekrekeningen op
+     * Voor filter opties zie e-boekhouden documentatie
+     *
+     * @param filter as Filter
+     * @return response as GetGrootboekrekeningenResponse
+     */
+    public GetGrootboekrekeningenResponse getGrootboekrekeningen(Filter filter){
+        return sendHttpRequest("GetGrootboekrekeningen", filter.serialize(), true, GetGrootboekrekeningenResponse.class);
+    }
+
+    /**
+     * Haal lijst met kostenplaatsen op
+     * Voor filter opties zie e-boekhouden documentatie
+     *
+     * @param filter as Filter
+     * @return response as GetKostenplaatsenResponse
+     */
+    public GetKostenplaatsenResponse getKostenplaatsen(Filter filter){
+        return sendHttpRequest("GetKostenplaatsen", filter.serialize(), true, GetKostenplaatsenResponse.class);
+    }
+
+    /**
+     * Haal lijst met mutaties op (max. 500)
+     * Voor filter opties zie e-boekhouden documentatie
+     *
+     * @param filter as Filter
+     * @return response as GetMutatiesResponse
+     */
+    public GetMutatiesResponse getMutaties(Filter filter){
+        return sendHttpRequest("GetMutaties", filter.serialize(), true, GetMutatiesResponse.class);
+    }
+
+    /**
+     * Haal lijst met openposten op
+     * Keuze om te zoeken: Debiteuren of Crediteuren
+     *
+     * @param OpSoort as OpSoort
+     * @return response as GetOpenPostenResponse
+     */
+    public GetOpenPostenResponse getOpenPosten(OpSoort OpSoort){
+        return sendHttpRequest("GetOpenPosten", "<OpSoort>" + OpSoort + "</OpSoort>", true, GetOpenPostenResponse.class);
+    }
+
+    /**
+     * Haal lijst met relaties op
+     * Voor filter opties zie e-boekhouden documentatie
+     *
+     * @param filter as Filter
+     * @return response as GetRelatiesResponse
+     */
+    public GetRelatiesResponse getRelaties(Filter filter){
+        return sendHttpRequest("GetRelaties", filter.serialize(), true, GetRelatiesResponse.class);
+    }
+
+    /**
+     * Haal 1 of meerdere saldi op van specifieke grootboekrekeningen
+     * Voor filter opties zie e-boekhouden documentatie
+     *
+     * @param filter as Filter
+     * @return response as GetSaldiResponse
+     */
+    public GetSaldiResponse getSaldi(Filter filter){
+        return sendHttpRequest("GetSaldi", filter.serialize(), true, GetSaldiResponse.class);
+    }
+
+    /**
+     * Haal het saldo op voor een grootboekrekening of kostenplaats
+     * Voor filter opties zie e-boekhouden documentatie
+     *
+     * @param filter as Filter
+     * @return response as GetSaldoResponse
+     */
+    public GetSaldoResponse getSaldo(Filter filter){
+        return sendHttpRequest("GetSaldo", filter.serialize(), true, GetSaldoResponse.class);
+    }
+
+    /**
+     * Pas een grootboekrekening aan
+     *
+     * @param request as AddGrootboekrekeningRequest
+     * @return response as UpdateGrootboekrekeningResponse
+     */
+    public UpdateGrootboekrekeningResponse updateGrootboekrekening(AddGrootboekrekeningRequest request){
+        return sendHttpRequest("UpdateGrootboekrekening", request.serialize(), true, UpdateGrootboekrekeningResponse.class);
+    }
+
+    /**
+     * Pas een relatie aan
+     *
+     * @param request as AddRelatieRequest
+     * @return response as UpdateRelatieResponse
+     */
+    public UpdateRelatieResponse updateRelatie(AddRelatieRequest request){
+        return sendHttpRequest("UpdateRelatie", request.serialize(), true, UpdateRelatieResponse.class);
+    }
+
+    /**
+     * Open een sessie (nodig om andere query's uit te voeren)
+     * Als er een AdministratieGUID is ingevoerd wordt een een Sub Session gestart
+     */
     public void openSession(){
 
-        sendRequest((administratieGUID == null ? "OpenSession" : "OpenSessionSub"), getLoginXml(), false, (httpResponse) -> {
-            xStream.processAnnotations(OpenSessionResponse.class);
+        OpenSessionResponse response = sendHttpRequest((administratieGUID == null ? "OpenSession" : "OpenSessionSub"), getLoginXml(), false, OpenSessionResponse.class);
 
-            OpenSessionResponse response = (OpenSessionResponse) xStream.fromXML(httpResponse);
-
-            if(response.error == null){
-                this.sessionId = response.SessionID;
-            } else {
-                // TODO better message
-                System.out.println("Something went wrong loggin in!");
-            }
-        });
+        if(response.error == null){
+            this.sessionId = response.SessionID;
+        } else {
+            // TODO better message
+            System.out.println("Something went wrong loggin in!");
+        }
 
     }
 
-    public void logout(){
-        sendRequest("CloseSession", "<SessionID>" + sessionId + "</SessionID>", false, (httpResponse) -> {});
+    /**
+     * Sluit huidige session
+     */
+    public void closeSession(){
+        sendHttpRequest("CloseSession", "<SessionID>" + sessionId + "</SessionID>", false, String.class);
     }
 
+    /**
+     * Nodig om single sign-on mogelijk te maken
+     * Voor meer informatie zie e-boekhouden documentatie
+     *
+     * @return Token as String
+     */
     public String autoLogin(){
 
         AutoLoginResponse response = sendHttpRequest("AutoLogin", "<Username>" + username + "</Username>", true, AutoLoginResponse.class);
@@ -72,28 +249,69 @@ public class JBoekhouden {
         return response.Token;
     }
 
-    private void sendRequest(String action, String xml, boolean withSession, Consumer<String> response){
-        System.out.println(getXml(action, xml, withSession));
+    /**
+     * Used to send http request to api + parse the response using the type param
+     *
+     * @param action
+     * @param xml
+     * @param withSession
+     * @param response
+     * @return
+     * @param <T>
+     */
+    private <T> T sendHttpRequest(String action, String xml, boolean withSession, Class<T> response){
 
-//        RequestBody body = RequestBody.create(getXml(action, xml, withSession), MediaType.get("text/xml"));
-//        Request request = new Request.Builder()
-//                .header("SOAPAction", "http://www.e-boekhouden.nl/soap/" + action)
-//                .url("https://soap.e-boekhouden.nl/soap.asmx")
-//                .post(body)
-//                .build();
-//
-//        try (Response httpResponse = httpClient.newCall(request).execute()) {
-//            response.accept(decodeResponse(action + "Response", httpResponse.body().bytes()));
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
+        String rawResponseString = null;
+        T rawResponse = null;
+
+        RequestBody body = RequestBody.create(getXml(action, xml, withSession), MediaType.get("application/json"));
+        Request request = new Request.Builder()
+                .header("SOAPAction", "http://www.e-boekhouden.nl/soap/" + action)
+                .url("https://soap.e-boekhouden.nl/soap.asmx")
+                .post(body)
+                .build();
+
+        try (Response rResponse = httpClient.newCall(request).execute()){
+            String parsedResponse = decodeResponse(action + "Response", rResponse.body().bytes());
+            if(response != String.class){
+                xStream.processAnnotations(response);
+                rawResponse = (T) xStream.fromXML(parsedResponse);
+            } else {
+                rawResponseString = parsedResponse;
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return response != String.class ? rawResponse : (T) rawResponseString;
+
     }
 
+    /**
+     * Used to decode the xml response
+     *
+     * @param type
+     * @param xml
+     * @return
+     */
+    private String decodeResponse(String type, byte[] xml){
+        return new String(xml).split("<" + type + " xmlns=\"http://www.e-boekhouden.nl/soap\"> ")[1].split("</" + type)[0];
+    }
+
+    /**
+     * Used to generate the xml for the http request
+     * Also adds sessions when necessary
+     *
+     * @param action
+     * @param xml
+     * @param withSession
+     * @return
+     */
     private String getXml(String action, String xml, boolean withSession){
         String extraXml = "";
         if(withSession){
             extraXml = "<SessionID>" + sessionId + "</SessionID>" +
-                       "<SecurityCode2>" + securityCode2 + "</SecurityCode2>";
+                    "<SecurityCode2>" + securityCode2 + "</SecurityCode2>";
         }
 
         return
@@ -109,6 +327,11 @@ public class JBoekhouden {
                         "</soap:Envelope>";
     }
 
+    /**
+     * Generates the xml for the opensession request
+     *
+     * @return xml as String
+     */
     private String getLoginXml(){
 
         String username = "<Username>" + this.username + "</Username>";
@@ -121,92 +344,11 @@ public class JBoekhouden {
 
     }
 
-    public String decodeResponse(String type, byte[] xml){
-        return new String(xml).split("<" + type + " xmlns=\"http://www.e-boekhouden.nl/soap\"> ")[1].split("</" + type)[0];
-    }
-
-    public AddFactuurResponse addFactuur(AddFactuurRequest request){
-        return sendHttpRequest("AddFactuur", request.serialize(), true, AddFactuurResponse.class);
-    }
-
-    public AddGrootboekrekeningResponse addGrootboekrekening(AddGrootboekrekeningRequest request){
-        return sendHttpRequest("AddGrootboekrekening", request.serialize(), true, AddGrootboekrekeningResponse.class);
-    }
-
-    public AddMutatieResponse addMutatie(AddMutatieRequest request){
-        return sendHttpRequest("AddMutatie", request.serialize(), true, AddMutatieResponse.class);
-    }
-
-    public AddRelatieResponse addRelatie(AddRelatieRequest request){
-        return sendHttpRequest("AddRelatie", request.serialize(), true, AddRelatieResponse.class);
-    }
-
-    public GetAdministratiesResponse getAdministraties(){
-        return sendHttpRequest("GetAdministraties", "", true, GetAdministratiesResponse.class);
-    }
-
-    public GetArtikelenResponse getArtikelen(Filter filter){
-        return sendHttpRequest("GetArtikelen", filter.serialize(), true, GetArtikelenResponse.class);
-    }
-
-    public GetFacturenResponse getFacturen(Filter filter){
-        return sendHttpRequest("GetFacturen", filter.serialize(), true, GetFacturenResponse.class);
-    }
-
-    public GetGrootboekrekeningenResponse getGrootboekrekeningen(Filter filter){
-        return sendHttpRequest("GetGrootboekrekeningen", filter.serialize(), true, GetGrootboekrekeningenResponse.class);
-    }
-
-    public GetKostenplaatsenResponse getKostenplaatsen(Filter filter){
-        return sendHttpRequest("GetKostenplaatsen", filter.serialize(), true, GetKostenplaatsenResponse.class);
-    }
-
-    public GetMutatiesResponse getMutaties(Filter filter){
-        return sendHttpRequest("GetMutaties", filter.serialize(), true, GetMutatiesResponse.class);
-    }
-
-    public GetOpenPostenResponse getOpenPosten(OpSoort OpSoort){
-        return sendHttpRequest("GetOpenPosten", "<OpSoort>" + OpSoort + "</OpSoort>", true, GetOpenPostenResponse.class);
-    }
-
-    public GetRelatiesResponse getRelaties(Filter filter){
-        return sendHttpRequest("GetRelaties", filter.serialize(), true, GetRelatiesResponse.class);
-    }
-
-    public GetSaldiResponse getSaldi(Filter filter){
-        return sendHttpRequest("GetSaldi", filter.serialize(), true, GetSaldiResponse.class);
-    }
-
-    public GetSaldoResponse getSaldo(Filter filter){
-        return sendHttpRequest("GetSaldo", filter.serialize(), true, GetSaldoResponse.class);
-    }
-
-    public UpdateGrootboekrekeningResponse updateGrootboekrekening(AddGrootboekrekeningRequest request){
-        return sendHttpRequest("UpdateGrootboekrekening", request.serialize(), true, UpdateGrootboekrekeningResponse.class);
-    }
-
-    public UpdateRelatieResponse updateRelatie(AddRelatieRequest request){
-        return sendHttpRequest("UpdateRelatie", request.serialize(), true, UpdateRelatieResponse.class);
-    }
-
-    public <T> T sendHttpRequest(String action, String xml, boolean withSession, Class<T> response){
-
-        AtomicReference<String> rawResponseString = new AtomicReference<>();
-        AtomicReference<T> rawResponse = new AtomicReference<>();
-
-        sendRequest(action, xml, withSession, (httpRes) -> {
-            if(response != String.class){
-                xStream.processAnnotations(response);
-                rawResponse.set((T) xStream.fromXML(httpRes));
-            } else {
-                rawResponseString.set(httpRes);
-            }
-        });
-
-        return response != String.class ? rawResponse.get() : (T) rawResponseString.get();
-
-    }
-
+    /**
+     * Create new Builder
+     *
+     * @return builder as JBoekhoudenBuilder
+     */
     public static JBoekhoudenBuilder builder(){
         return new JBoekhoudenBuilder();
     }
