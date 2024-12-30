@@ -26,7 +26,6 @@ public class Filter extends Request {
     public Long MutatieNrTm;
 
     // GetFacturen / GetMutaties
-    // TODO handle dateTime type
     public String Factuurnummer;
     public Date DatumTm;
 

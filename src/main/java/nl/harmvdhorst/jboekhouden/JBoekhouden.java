@@ -2,6 +2,7 @@ package nl.harmvdhorst.jboekhouden;
 
 import com.thoughtworks.xstream.XStream;
 
+import nl.harmvdhorst.jboekhouden.converter.DateTimeConverter;
 import nl.harmvdhorst.jboekhouden.objects.Filter;
 import nl.harmvdhorst.jboekhouden.objects.OpSoort;
 import nl.harmvdhorst.jboekhouden.request.AddFactuurRequest;
@@ -36,6 +37,7 @@ public class JBoekhouden {
         this.administratieGUID = administratieGUID;
 
         xStream.allowTypesByWildcard(new String[]{"nl.harmvdhorst.jboekhouden.**"});
+        xStream.registerConverter(new DateTimeConverter());
     }
 
     /**
@@ -214,7 +216,7 @@ public class JBoekhouden {
 
         OpenSessionResponse response = sendHttpRequest((administratieGUID == null ? "OpenSession" : "OpenSessionSub"), getLoginXml(), false, OpenSessionResponse.class);
 
-        if(response.error == null){
+        if(response.error.LastErrorCode.isEmpty()){
             this.sessionId = response.SessionID;
         } else {
             // TODO better message
@@ -264,7 +266,9 @@ public class JBoekhouden {
         String rawResponseString = null;
         T rawResponse = null;
 
-        RequestBody body = RequestBody.create(getXml(action, xml, withSession), MediaType.get("application/json"));
+        //System.out.println("Sending " + action + " data: " + getXml(action, xml, withSession));
+
+        RequestBody body = RequestBody.create(getXml(action, xml, withSession), MediaType.get("text/xml"));
         Request request = new Request.Builder()
                 .header("SOAPAction", "http://www.e-boekhouden.nl/soap/" + action)
                 .url("https://soap.e-boekhouden.nl/soap.asmx")
@@ -295,7 +299,7 @@ public class JBoekhouden {
      * @return
      */
     private String decodeResponse(String type, byte[] xml){
-        return new String(xml).split("<" + type + " xmlns=\"http://www.e-boekhouden.nl/soap\"> ")[1].split("</" + type)[0];
+        return new String(xml).split("<" + type + " xmlns=\"http://www.e-boekhouden.nl/soap\">")[1].split("</" + type)[0];
     }
 
     /**
