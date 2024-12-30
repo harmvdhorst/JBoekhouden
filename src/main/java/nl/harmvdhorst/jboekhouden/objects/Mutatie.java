@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 @XStreamAlias("cMutatieList")
-public class MutatieList {
+public class Mutatie {
 
     public Long MutatieNr;
     public Soort Soort;

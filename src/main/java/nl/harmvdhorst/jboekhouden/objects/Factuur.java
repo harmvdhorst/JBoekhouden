@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 @XStreamAlias("cFactuurList")
-public class FactuurList {
+public class Factuur {
 
     public String Factuurnummer;
     public Date Datum;
