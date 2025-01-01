@@ -8,8 +8,6 @@ import nl.harmvdhorst.jboekhouden.request.Verifiable;
 @XStreamAlias("cMutatieRegel")
 public class MutatieRegel implements Verifiable {
 
-    // TODO handle decimal type using custom converter?
-
     @Required
     public Float BedragInvoer;
     @Required

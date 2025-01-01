@@ -3,6 +3,7 @@ package nl.harmvdhorst.jboekhouden;
 import com.thoughtworks.xstream.XStream;
 
 import nl.harmvdhorst.jboekhouden.converter.DateTimeConverter;
+import nl.harmvdhorst.jboekhouden.exeption.LoginException;
 import nl.harmvdhorst.jboekhouden.objects.Filter;
 import nl.harmvdhorst.jboekhouden.objects.MutatieRegel;
 import nl.harmvdhorst.jboekhouden.objects.OpSoort;
@@ -216,13 +217,14 @@ public class JBoekhouden {
      */
     public void openSession(){
 
+        xStream.alias("OpenSessionSubResult", OpenSessionResponse.class);
+
         OpenSessionResponse response = sendHttpRequest((administratieGUID == null ? "OpenSession" : "OpenSessionSub"), getLoginXml(), false, OpenSessionResponse.class);
 
         if(response.error.LastErrorCode.isEmpty()){
             this.sessionId = response.SessionID;
         } else {
-            // TODO better message
-            System.out.println("Something went wrong loggin in!");
+            throw new LoginException(response.error, false);
         }
 
     }
@@ -245,9 +247,7 @@ public class JBoekhouden {
         AutoLoginResponse response = sendHttpRequest("AutoLogin", "<Username>" + username + "</Username>", true, AutoLoginResponse.class);
 
         if(response.error.LastErrorCode != null){
-            // TODO proper error handling
-            System.out.println("error");
-            return null;
+            throw new LoginException(response.error, true);
         }
 
         return response.Token;
@@ -268,8 +268,6 @@ public class JBoekhouden {
         String rawResponseString = null;
         T rawResponse = null;
 
-        //System.out.println("Sending " + action + " data: " + getXml(action, xml, withSession));
-
         RequestBody body = RequestBody.create(getXml(action, xml, withSession), MediaType.get("text/xml"));
         Request request = new Request.Builder()
                 .header("SOAPAction", "http://www.e-boekhouden.nl/soap/" + action)
@@ -278,12 +276,16 @@ public class JBoekhouden {
                 .build();
 
         try (Response rResponse = httpClient.newCall(request).execute()){
-            String parsedResponse = decodeResponse(action + "Response", rResponse.body().bytes());
-            if(response != String.class){
-                xStream.processAnnotations(response);
-                rawResponse = (T) xStream.fromXML(parsedResponse);
+            if(!action.equals("CloseSession")){
+                String parsedResponse = decodeResponse(action + "Response", rResponse.body().bytes());
+                if(response != String.class){
+                    xStream.processAnnotations(response);
+                    rawResponse = (T) xStream.fromXML(parsedResponse);
+                } else {
+                    rawResponseString = parsedResponse;
+                }
             } else {
-                rawResponseString = parsedResponse;
+                rawResponseString = rResponse.body().string();
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

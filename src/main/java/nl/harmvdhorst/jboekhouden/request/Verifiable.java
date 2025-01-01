@@ -1,5 +1,6 @@
 package nl.harmvdhorst.jboekhouden.request;
 
+import nl.harmvdhorst.jboekhouden.exeption.RequiredFieldException;
 import nl.harmvdhorst.jboekhouden.objects.Required;
 
 import java.lang.reflect.Field;
@@ -19,8 +20,7 @@ public interface Verifiable {
                 if(field.isAnnotationPresent(Required.class)){
                     field.setAccessible(true);
                     if(field.get(this) == null){
-                        // TODO required field is missing
-                        System.out.println("Field " + field.getName() + " is required");
+                        throw new RequiredFieldException(this.getClass().getSimpleName(), field.getName());
                     } else {
                         if(field.getType() == List.class){
                             List list = (List) field.get(this);

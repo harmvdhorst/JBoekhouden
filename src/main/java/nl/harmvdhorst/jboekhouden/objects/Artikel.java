@@ -5,8 +5,6 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("cArtikel")
 public class Artikel {
 
-    // TODO handle decimal type
-
     public Long ArtikelID;
     public String ArtikelOmschrijving;
     public String ArtikelCode;
