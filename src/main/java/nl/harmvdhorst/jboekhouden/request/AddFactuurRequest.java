@@ -13,9 +13,9 @@ import java.util.List;
 @XStreamAlias("oFact")
 public class AddFactuurRequest extends Request {
 
-    public String FactuurNummer;
+    public String Factuurnummer;
     @Required
-    public String RelatieCode;
+    public String Relatiecode;
     @Required
     public Date Datum;
     public Long Betalingstermijn;

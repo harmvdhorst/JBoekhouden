@@ -4,6 +4,7 @@ import com.thoughtworks.xstream.XStream;
 
 import nl.harmvdhorst.jboekhouden.converter.DateTimeConverter;
 import nl.harmvdhorst.jboekhouden.objects.Filter;
+import nl.harmvdhorst.jboekhouden.objects.MutatieRegel;
 import nl.harmvdhorst.jboekhouden.objects.OpSoort;
 import nl.harmvdhorst.jboekhouden.request.AddFactuurRequest;
 import nl.harmvdhorst.jboekhouden.request.AddGrootboekrekeningRequest;
@@ -141,6 +142,7 @@ public class JBoekhouden {
      * @return response as GetMutatiesResponse
      */
     public GetMutatiesResponse getMutaties(Filter filter){
+        xStream.alias("cMutatieListRegel", MutatieRegel.class);
         return sendHttpRequest("GetMutaties", filter.serialize(), true, GetMutatiesResponse.class);
     }
 
@@ -242,7 +244,7 @@ public class JBoekhouden {
 
         AutoLoginResponse response = sendHttpRequest("AutoLogin", "<Username>" + username + "</Username>", true, AutoLoginResponse.class);
 
-        if(response.error != null){
+        if(response.error.LastErrorCode != null){
             // TODO proper error handling
             System.out.println("error");
             return null;

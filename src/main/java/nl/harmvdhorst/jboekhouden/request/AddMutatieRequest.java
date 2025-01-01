@@ -31,6 +31,7 @@ public class AddMutatieRequest extends Request {
     @Required
     public String Betalingstermijn;
     public String Betalingskenmerk;
+    @Required
     public InExBTW InExBTW;
 
     @Required

@@ -1,6 +1,7 @@
 package nl.harmvdhorst.jboekhouden.request;
 
 import com.thoughtworks.xstream.XStream;
+import nl.harmvdhorst.jboekhouden.converter.DateTimeConverter;
 
 public abstract class Request implements Verifiable {
 
@@ -15,6 +16,7 @@ public abstract class Request implements Verifiable {
 
         XStream stream = new XStream();
         stream.processAnnotations(getClass());
+        stream.registerConverter(new DateTimeConverter());
 
         return stream.toXML(this);
 

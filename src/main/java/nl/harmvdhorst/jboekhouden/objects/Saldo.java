@@ -7,7 +7,7 @@ public class Saldo {
 
     public Long ID;
     public String Code;
-    public Categorie Categorie;
+    public String Categorie;
     public Double Saldo;
 
 }

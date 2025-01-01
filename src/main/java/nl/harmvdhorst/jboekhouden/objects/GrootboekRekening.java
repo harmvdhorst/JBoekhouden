@@ -8,7 +8,7 @@ public class GrootboekRekening {
     public Long ID;
     public String Code;
     public String Omschrijving;
-    public Categorie Categorie;
+    public String Categorie;
     public String Groep;
 
 }

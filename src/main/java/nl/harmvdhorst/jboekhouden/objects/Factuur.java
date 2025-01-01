@@ -9,6 +9,7 @@ import java.util.List;
 public class Factuur {
 
     public String Factuurnummer;
+    public String Relatiecode;
     public Date Datum;
     public Long Betalingstermijn;
     public Double TotaalExclBTW;

@@ -38,7 +38,7 @@ public class Filter extends Request {
     public String Omschrijving;
 
     // GetGrootboekrekeningen / GetSaldi
-    public Categorie Categorie;
+    public String Categorie;
 
     // GetRelaties
     public String Trefwoord;
@@ -54,7 +54,9 @@ public class Filter extends Request {
     // GetSaldo
     public String GbCode;
 
-
+    public static Filter empty(){
+        return Filter.builder().build();
+    }
 
 
 }
