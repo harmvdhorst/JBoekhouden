@@ -1,4 +1,4 @@
-package nl.harmvdhorst.jboekhouden.objects;
+package nl.harmvdhorst.jboekhouden.verifier;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

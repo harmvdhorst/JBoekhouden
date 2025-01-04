@@ -28,15 +28,17 @@ public class JBoekhouden {
     private final String securityCode2;
     private final String source;
     private final String administratieGUID;
+    private final boolean shouldVerify;
 
     private String sessionId;
 
-    private JBoekhouden(String username, String securityCode1, String securityCode2, String source, String administratieGUID){
+    private JBoekhouden(String username, String securityCode1, String securityCode2, String source, String administratieGUID, boolean shouldVerify) {
         this.username = username;
         this.securityCode1 = securityCode1;
         this.securityCode2 = securityCode2;
         this.source = source;
         this.administratieGUID = administratieGUID;
+        this.shouldVerify = shouldVerify;
         
         xStream.allowTypesByWildcard(new String[]{"nl.harmvdhorst.jboekhouden.**"});
         xStream.registerConverter(new DateTimeConverter());
@@ -49,7 +51,7 @@ public class JBoekhouden {
      * @return response as AddFactuurResponse
      */
     public AddFactuurResponse addFactuur(AddFactuurRequest request){
-        return sendHttpRequest("AddFactuur", request.serialize(), true, AddFactuurResponse.class);
+        return sendHttpRequest("AddFactuur", request.serialize(shouldVerify), true, AddFactuurResponse.class);
     }
 
     /**
@@ -59,7 +61,7 @@ public class JBoekhouden {
      * @return response as AddGrootboekrekeningResponse
      */
     public AddGrootboekrekeningResponse addGrootboekrekening(AddGrootboekrekeningRequest request){
-        return sendHttpRequest("AddGrootboekrekening", request.serialize(), true, AddGrootboekrekeningResponse.class);
+        return sendHttpRequest("AddGrootboekrekening", request.serialize(shouldVerify), true, AddGrootboekrekeningResponse.class);
     }
 
     /**
@@ -69,7 +71,7 @@ public class JBoekhouden {
      * @return response as AddMutatieResponse
      */
     public AddMutatieResponse addMutatie(AddMutatieRequest request){
-        return sendHttpRequest("AddMutatie", request.serialize(), true, AddMutatieResponse.class);
+        return sendHttpRequest("AddMutatie", request.serialize(shouldVerify), true, AddMutatieResponse.class);
     }
 
     /**
@@ -79,7 +81,7 @@ public class JBoekhouden {
      * @return response as AddRelatieResponse
      */
     public AddRelatieResponse addRelatie(AddRelatieRequest request){
-        return sendHttpRequest("AddRelatie", request.serialize(), true, AddRelatieResponse.class);
+        return sendHttpRequest("AddRelatie", request.serialize(shouldVerify), true, AddRelatieResponse.class);
     }
 
     /**
@@ -99,7 +101,7 @@ public class JBoekhouden {
      * @return response as GetArtikelenResponse
      */
     public GetArtikelenResponse getArtikelen(Filter filter){
-        return sendHttpRequest("GetArtikelen", filter.serialize(), true, GetArtikelenResponse.class);
+        return sendHttpRequest("GetArtikelen", filter.serialize(shouldVerify), true, GetArtikelenResponse.class);
     }
 
     /**
@@ -110,7 +112,7 @@ public class JBoekhouden {
      * @return response as GetFacturenResponse
      */
     public GetFacturenResponse getFacturen(Filter filter){
-        return sendHttpRequest("GetFacturen", filter.serialize(), true, GetFacturenResponse.class);
+        return sendHttpRequest("GetFacturen", filter.serialize(shouldVerify), true, GetFacturenResponse.class);
     }
 
     /**
@@ -121,7 +123,7 @@ public class JBoekhouden {
      * @return response as GetGrootboekrekeningenResponse
      */
     public GetGrootboekrekeningenResponse getGrootboekrekeningen(Filter filter){
-        return sendHttpRequest("GetGrootboekrekeningen", filter.serialize(), true, GetGrootboekrekeningenResponse.class);
+        return sendHttpRequest("GetGrootboekrekeningen", filter.serialize(shouldVerify), true, GetGrootboekrekeningenResponse.class);
     }
 
     /**
@@ -132,7 +134,7 @@ public class JBoekhouden {
      * @return response as GetKostenplaatsenResponse
      */
     public GetKostenplaatsenResponse getKostenplaatsen(Filter filter){
-        return sendHttpRequest("GetKostenplaatsen", filter.serialize(), true, GetKostenplaatsenResponse.class);
+        return sendHttpRequest("GetKostenplaatsen", filter.serialize(shouldVerify), true, GetKostenplaatsenResponse.class);
     }
 
     /**
@@ -144,7 +146,7 @@ public class JBoekhouden {
      */
     public GetMutatiesResponse getMutaties(Filter filter){
         xStream.alias("cMutatieListRegel", MutatieRegel.class);
-        return sendHttpRequest("GetMutaties", filter.serialize(), true, GetMutatiesResponse.class);
+        return sendHttpRequest("GetMutaties", filter.serialize(shouldVerify), true, GetMutatiesResponse.class);
     }
 
     /**
@@ -166,7 +168,7 @@ public class JBoekhouden {
      * @return response as GetRelatiesResponse
      */
     public GetRelatiesResponse getRelaties(Filter filter){
-        return sendHttpRequest("GetRelaties", filter.serialize(), true, GetRelatiesResponse.class);
+        return sendHttpRequest("GetRelaties", filter.serialize(shouldVerify), true, GetRelatiesResponse.class);
     }
 
     /**
@@ -177,7 +179,7 @@ public class JBoekhouden {
      * @return response as GetSaldiResponse
      */
     public GetSaldiResponse getSaldi(Filter filter){
-        return sendHttpRequest("GetSaldi", filter.serialize(), true, GetSaldiResponse.class);
+        return sendHttpRequest("GetSaldi", filter.serialize(shouldVerify), true, GetSaldiResponse.class);
     }
 
     /**
@@ -188,7 +190,7 @@ public class JBoekhouden {
      * @return response as GetSaldoResponse
      */
     public GetSaldoResponse getSaldo(Filter filter){
-        return sendHttpRequest("GetSaldo", filter.serialize(), true, GetSaldoResponse.class);
+        return sendHttpRequest("GetSaldo", filter.serialize(shouldVerify), true, GetSaldoResponse.class);
     }
 
     /**
@@ -198,7 +200,7 @@ public class JBoekhouden {
      * @return response as UpdateGrootboekrekeningResponse
      */
     public UpdateGrootboekrekeningResponse updateGrootboekrekening(AddGrootboekrekeningRequest request){
-        return sendHttpRequest("UpdateGrootboekrekening", request.serialize(), true, UpdateGrootboekrekeningResponse.class);
+        return sendHttpRequest("UpdateGrootboekrekening", request.serialize(shouldVerify), true, UpdateGrootboekrekeningResponse.class);
     }
 
     /**
@@ -208,7 +210,7 @@ public class JBoekhouden {
      * @return response as UpdateRelatieResponse
      */
     public UpdateRelatieResponse updateRelatie(AddRelatieRequest request){
-        return sendHttpRequest("UpdateRelatie", request.serialize(), true, UpdateRelatieResponse.class);
+        return sendHttpRequest("UpdateRelatie", request.serialize(shouldVerify), true, UpdateRelatieResponse.class);
     }
 
     /**
@@ -368,6 +370,7 @@ public class JBoekhouden {
         private String securityCode2;
         private String source = null;
         private String administratieGUID = null;
+        private boolean shouldVerify = true;
 
         public JBoekhoudenBuilder setUsername(String username){
             this.username = username;
@@ -390,8 +393,13 @@ public class JBoekhouden {
             return this;
         }
 
+        public JBoekhoudenBuilder disableVerifier(){
+            this.shouldVerify = false;
+            return this;
+        }
+
         public JBoekhouden build(){
-            return new JBoekhouden(username, securityCode1, securityCode2, source, administratieGUID);
+            return new JBoekhouden(username, securityCode1, securityCode2, source, administratieGUID, shouldVerify);
         }
 
     }
